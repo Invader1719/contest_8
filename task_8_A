@@ -1,0 +1,59 @@
+#include <iostream>
+#include <set>
+#include <vector>
+
+const int cKInf = 2009000999;
+
+int main() {
+  int k;
+  std::cin >> k;
+
+  for (int qweewq = 0; qweewq < k; qweewq++) {
+    int n;
+    int m;
+    std::cin >> n >> m;
+    std::vector<std::vector<std::pair<int, int>>> graph(n);  // куда, цена
+    std::vector<bool> visited(n, false);
+
+    for (int i = 0; i < m; i++) {
+      int from;
+      int to;
+      int weight;
+      std::cin >> from >> to >> weight;
+      graph[from].push_back({to, weight});
+      graph[to].push_back({from, weight});
+    }
+    int begin;
+    std::cin >> begin;
+
+    std::set<std::pair<int, int>> setdist;  // Расст, до какого
+    setdist.insert({0, begin});
+    std::vector<int> dist(n, cKInf);
+    dist[begin] = 0;
+
+    while (!setdist.empty()) {
+      // находим вершину с наименьшей ценой;
+      auto it = setdist.begin();
+      auto par = *it;
+      int costmin = par.first;
+      int vertmin = par.second;
+      setdist.erase(it);
+
+      if (costmin > dist[vertmin]) {
+        continue;
+      }
+
+      for (auto tmp : graph[vertmin]) {
+        if (dist[tmp.first] > dist[vertmin] + tmp.second) {
+          dist[tmp.first] = dist[vertmin] + tmp.second;
+          setdist.insert({dist[tmp.first], tmp.first});
+        }
+      }
+    }
+
+    for (int i = 0; i < n; i++) {
+      std::cout << dist[i] << ' ';
+    }
+  }
+  return 0;
+}
