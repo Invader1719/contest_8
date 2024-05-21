@@ -4,25 +4,48 @@
 
 const int cKInf = 2009000999;
 
-int main() {
-  int k;
-  std::cin >> k;
+void Input(std::vector<std::vector<std::pair<int, int>>>& graph, int m) {
+    for (int i = 0; i < m; i++) {
+        int from;
+        int to;
+        int weight;
+        std::cin >> from >> to >> weight;
+        graph[from].push_back({to, weight});
+        graph[to].push_back({from, weight});
+    }
+}
 
-  for (int qweewq = 0; qweewq < k; qweewq++) {
+bool FindAns(std::set<std::pair<int, int>>& setdist, std::vector<int>& dist,
+             std::vector<std::vector<std::pair<int, int>>>& graph) {
+    // находим вершину с наименьшей ценой;
+    auto it = setdist.begin();
+    auto par = *it;
+    int costmin = par.first;
+    int vertmin = par.second;
+    setdist.erase(it);
+
+    if (costmin > dist[vertmin]) {
+        return true;
+    }
+
+    for (auto tmp : graph[vertmin]) {
+        if (dist[tmp.first] > dist[vertmin] + tmp.second) {
+            dist[tmp.first] = dist[vertmin] + tmp.second;
+            setdist.insert({dist[tmp.first], tmp.first});
+        }
+    }
+    return false;
+}
+
+void SolveTask() {
     int n;
     int m;
     std::cin >> n >> m;
     std::vector<std::vector<std::pair<int, int>>> graph(n);  // куда, цена
     std::vector<bool> visited(n, false);
 
-    for (int i = 0; i < m; i++) {
-      int from;
-      int to;
-      int weight;
-      std::cin >> from >> to >> weight;
-      graph[from].push_back({to, weight});
-      graph[to].push_back({from, weight});
-    }
+    Input(graph, m);
+
     int begin;
     std::cin >> begin;
 
@@ -32,28 +55,19 @@ int main() {
     dist[begin] = 0;
 
     while (!setdist.empty()) {
-      // находим вершину с наименьшей ценой;
-      auto it = setdist.begin();
-      auto par = *it;
-      int costmin = par.first;
-      int vertmin = par.second;
-      setdist.erase(it);
-
-      if (costmin > dist[vertmin]) {
-        continue;
-      }
-
-      for (auto tmp : graph[vertmin]) {
-        if (dist[tmp.first] > dist[vertmin] + tmp.second) {
-          dist[tmp.first] = dist[vertmin] + tmp.second;
-          setdist.insert({dist[tmp.first], tmp.first});
-        }
-      }
+        FindAns(setdist, dist, graph);
     }
 
     for (int i = 0; i < n; i++) {
-      std::cout << dist[i] << ' ';
+        std::cout << dist[i] << ' ';
     }
-  }
-  return 0;
+}
+
+int main() {
+    int asks;
+    std::cin >> asks;
+
+    for (int i = 0; i < asks; i++) {
+    }
+    return 0;
 }
