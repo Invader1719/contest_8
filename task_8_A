@@ -1,0 +1,73 @@
+#include <iostream>
+#include <set>
+#include <vector>
+
+const int cKInf = 2009000999;
+
+void Input(std::vector<std::vector<std::pair<int, int>>>& graph, int m) {
+    for (int i = 0; i < m; i++) {
+        int from;
+        int to;
+        int weight;
+        std::cin >> from >> to >> weight;
+        graph[from].push_back({to, weight});
+        graph[to].push_back({from, weight});
+    }
+}
+
+bool FindAns(std::set<std::pair<int, int>>& setdist, std::vector<int>& dist,
+             std::vector<std::vector<std::pair<int, int>>>& graph) {
+    // находим вершину с наименьшей ценой;
+    auto it = setdist.begin();
+    auto par = *it;
+    int costmin = par.first;
+    int vertmin = par.second;
+    setdist.erase(it);
+
+    if (costmin > dist[vertmin]) {
+        return true;
+    }
+
+    for (auto tmp : graph[vertmin]) {
+        if (dist[tmp.first] > dist[vertmin] + tmp.second) {
+            dist[tmp.first] = dist[vertmin] + tmp.second;
+            setdist.insert({dist[tmp.first], tmp.first});
+        }
+    }
+    return false;
+}
+
+void SolveTask() {
+    int n;
+    int m;
+    std::cin >> n >> m;
+    std::vector<std::vector<std::pair<int, int>>> graph(n);  // куда, цена
+    std::vector<bool> visited(n, false);
+
+    Input(graph, m);
+
+    int begin;
+    std::cin >> begin;
+
+    std::set<std::pair<int, int>> setdist;  // Расст, до какого
+    setdist.insert({0, begin});
+    std::vector<int> dist(n, cKInf);
+    dist[begin] = 0;
+
+    while (!setdist.empty()) {
+        FindAns(setdist, dist, graph);
+    }
+
+    for (int i = 0; i < n; i++) {
+        std::cout << dist[i] << ' ';
+    }
+}
+
+int main() {
+    int asks;
+    std::cin >> asks;
+
+    for (int i = 0; i < asks; i++) {
+    }
+    return 0;
+}
